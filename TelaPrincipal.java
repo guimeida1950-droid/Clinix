@@ -37,6 +37,8 @@ public class TelaPrincipal extends JFrame {
 
         private JButton botaoPacientes;
 
+        private JLabel numeroConsultas;
+
         private JButton botaoConsultas;
 
         private JButton botaoProntuarios;
@@ -113,7 +115,7 @@ public class TelaPrincipal extends JFrame {
         }
 
         // =====================================================
-        // MENU LATERAL
+        // MENU LATERAL e IMAGEM DE BARRA INFERIOR
         // =====================================================
 
         private void criarMenuLateral() {
@@ -286,11 +288,8 @@ public class TelaPrincipal extends JFrame {
 
                 botaoPacientes.addActionListener(
                                 e -> abrirPacientes());
-
                 botaoConsultas.addActionListener(
-                                e -> mostrarMensagem(
-                                                "Módulo de consultas em desenvolvimento."));
-
+                                e -> abrirConsultas());
                 botaoProntuarios.addActionListener(
                                 e -> mostrarMensagem(
                                                 "Módulo de prontuários em desenvolvimento."));
@@ -518,11 +517,16 @@ public class TelaPrincipal extends JFrame {
                 // OUTROS CARDS
                 // =================================================
 
+                JPanel cardConsultas = criarCard(
+                                "Consultas",
+                                "0",
+                                "Consultas hoje");
+
+                numeroConsultas = encontrarNumeroCard(
+                                cardConsultas);
+
                 cards.add(
-                                criarCard(
-                                                "Consultas",
-                                                "0",
-                                                "Consultas hoje"));
+                                cardConsultas);
 
                 cards.add(
                                 criarCard(
@@ -595,6 +599,9 @@ public class TelaPrincipal extends JFrame {
 
                 atualizarTotalPacientes();
 
+                atualizarTotalPacientes();
+                atualizarConsultasHoje();
+
                 painelConteudo.revalidate();
 
                 painelConteudo.repaint();
@@ -603,6 +610,46 @@ public class TelaPrincipal extends JFrame {
         // =====================================================
         // ENCONTRAR LABEL DO NÚMERO
         // =====================================================
+        private void atualizarConsultasHoje() {
+
+                String sql = """
+                                SELECT COUNT(*)
+                                FROM consultas
+                                WHERE data_consulta = CURDATE()
+                                """;
+
+                try (
+                                Connection conexao = Conexao.conectar();
+
+                                PreparedStatement comando = conexao.prepareStatement(sql);
+
+                                ResultSet resultado = comando.executeQuery()) {
+
+                        if (resultado.next()) {
+
+                                int total = resultado.getInt(1);
+
+                                if (numeroConsultas != null) {
+
+                                        numeroConsultas.setText(
+                                                        String.valueOf(total));
+                                }
+                        }
+
+                } catch (SQLException e) {
+
+                        if (numeroConsultas != null) {
+
+                                numeroConsultas.setText("0");
+                        }
+
+                        System.out.println(
+                                        "Erro ao buscar consultas de hoje:");
+
+                        System.out.println(
+                                        e.getMessage());
+                }
+        }
 
         private JLabel encontrarNumeroCard(
                         JPanel card) {
@@ -784,6 +831,20 @@ public class TelaPrincipal extends JFrame {
         // =====================================================
         // ABRIR PACIENTES
         // =====================================================
+        private void abrirConsultas() {
+
+                painelConteudo.removeAll();
+
+                Consultas consultas = new Consultas();
+
+                painelConteudo.add(
+                                consultas,
+                                BorderLayout.CENTER);
+
+                painelConteudo.revalidate();
+
+                painelConteudo.repaint();
+        }
 
         private void abrirPacientes() {
 
