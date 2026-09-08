@@ -87,8 +87,13 @@ public class TelaPrincipal extends JFrame {
 
                 getContentPane()
                                 .setBackground(FUNDO);
-        }
 
+                if (ConfiguracoesManager.isMaximizado()) {
+
+                        setExtendedState(
+                                        JFrame.MAXIMIZED_BOTH);
+                }
+        }
         // =====================================================
         // CRIAR INTERFACE
         // =====================================================
@@ -291,12 +296,9 @@ public class TelaPrincipal extends JFrame {
                 botaoConsultas.addActionListener(
                                 e -> abrirConsultas());
                 botaoProntuarios.addActionListener(
-                                e -> mostrarMensagem(
-                                                "Módulo de prontuários em desenvolvimento."));
-
+                                e -> abrirProntuarios());
                 botaoConfiguracoes.addActionListener(
-                                e -> mostrarMensagem(
-                                                "Módulo de configurações em desenvolvimento."));
+                                e -> abrirConfiguracoes());
 
                 botaoSair.addActionListener(
                                 e -> {
@@ -831,6 +833,35 @@ public class TelaPrincipal extends JFrame {
         // =====================================================
         // ABRIR PACIENTES
         // =====================================================
+        private void abrirProntuarios() {
+
+                painelConteudo.removeAll();
+
+                Prontuarios prontuarios = new Prontuarios();
+
+                painelConteudo.add(
+                                prontuarios,
+                                BorderLayout.CENTER);
+
+                painelConteudo.revalidate();
+
+                painelConteudo.repaint();
+        }
+
+        private void abrirConfiguracoes() {
+
+                painelConteudo.removeAll();
+
+                Configuracoes configuracoes = new Configuracoes();
+
+                painelConteudo.add(
+                                configuracoes,
+                                BorderLayout.CENTER);
+
+                painelConteudo.revalidate();
+                painelConteudo.repaint();
+        }
+
         private void abrirConsultas() {
 
                 painelConteudo.removeAll();
